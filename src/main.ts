@@ -53,10 +53,12 @@ if (!app.requestSingleInstanceLock()) {
     const cfg = loadConfig();
     const dbPath = path.join(app.getPath('userData'), 'freeapi.db');
     // Packaged: client/dist ships in extraResources (Resources/client-dist).
-    // Dev (electron . from desktop/): use the repo's client/dist.
+    // Dev: use the sibling freellmapi checkout's client/dist (FREEAPI_REPO
+    // overrides the default ../freeapi location).
+    const repoRoot = process.env.FREEAPI_REPO ?? path.resolve(__dirname, '../../freeapi');
     const clientDist = app.isPackaged
       ? path.join(process.resourcesPath, 'client-dist')
-      : path.resolve(__dirname, '../../client/dist');
+      : path.join(repoRoot, 'client/dist');
 
     try {
       const { port } = await startServer({

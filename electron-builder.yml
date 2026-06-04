@@ -12,7 +12,7 @@ asarUnpack:
   - "**/node_modules/better-sqlite3/**/*.node"
   - "**/node_modules/better-sqlite3/build/Release/**"
 extraResources:
-  - from: ../client/dist
+  - from: ../freeapi/client/dist
     to: client-dist
 mac:
   category: public.app-category.developer-tools
