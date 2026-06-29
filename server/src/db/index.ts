@@ -39,6 +39,11 @@ export function initDb(dbPath?: string): Database.Database {
 }
 
 export function getUnifiedApiKey(): string {
+  // Allow overriding via env var — set UNIFIED_API_KEY in Render/production
+  // to change the key without re-deploying or touching the database.
+  const envKey = process.env.UNIFIED_API_KEY?.trim();
+  if (envKey) return envKey;
+
   const db = getDb();
   const row = db.prepare("SELECT value FROM settings WHERE key = 'unified_api_key'").get() as { value: string };
   return row.value;
