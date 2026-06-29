@@ -24,6 +24,7 @@ FROM deps AS build
 WORKDIR /app
 
 COPY . .
+RUN mkdir -p server/data
 
 RUN npm run build
 RUN npm prune --omit=dev

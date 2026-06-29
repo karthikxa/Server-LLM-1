@@ -6,13 +6,9 @@ server/node_modules
 shared/node_modules
 client/dist
 server/dist
-server/data
 dist
 .env
 .env.*
-*.db
-*.db-wal
-*.db-shm
 *.bak
 .DS_Store
 npm-debug.log*
