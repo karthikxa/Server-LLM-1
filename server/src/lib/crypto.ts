@@ -51,7 +51,11 @@ function missingKeyError(): Error {
  */
 export function initEncryptionKey(db: Database.Database): void {
   // 1. Check env var
-  const envKey = process.env.ENCRYPTION_KEY;
+  let envKey = process.env.ENCRYPTION_KEY;
+  if (envKey) {
+    envKey = envKey.replace(/\s+/g, '');
+  }
+
   if (envKey && envKey !== PLACEHOLDER_KEY) {
     cachedKey = parseHexKey(envKey, 'env');
     return;
