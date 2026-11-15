@@ -35,6 +35,7 @@ ENV FREELLMAPI_INSTALL_METHOD=docker
 
 COPY --from=build --chown=node:node /app/package.json /app/package-lock.json ./
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/server/node_modules ./server/node_modules
 COPY --from=build --chown=node:node /app/shared ./shared
 COPY --from=build --chown=node:node /app/server/package.json ./server/package.json
 COPY --from=build --chown=node:node /app/server/dist ./server/dist
