@@ -60,7 +60,7 @@ function isAutoModel(modelId: string | undefined): boolean {
 // timingSafeStringEqual moved to lib/system-prompt.ts (resolveAuth needs it
 // and importing it back from this route would be a cycle). Re-exported here
 // for existing importers (anthropic, gemini, mcp, ollama, status, url-tokens).
-export { timingSafeStringEqual } from '../lib/system-prompt.js';
+export { timingSafeStringEqual, isUnifiedOrIntegrationToken } from '../lib/system-prompt.js';
 
 // Shared auth gate for the /v1 inference endpoints (#411): accepts the unified
 // key (default behavior, no enforced prompt) or an enabled client-profile key
