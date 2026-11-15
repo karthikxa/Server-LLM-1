@@ -4,7 +4,7 @@ import path from 'path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'url';
 import { runMigrationsSync } from './migrate/runner.js';
-import { initEncryptionKey, isEncryptionKeyInitialized, probeStoredSecrets } from '../lib/crypto.js';
+import { initEncryptionKey, isEncryptionKeyInitialized, probeStoredSecrets, encrypt } from '../lib/crypto.js';
 import { restrictAllToOwner, restrictDirToOwner } from '../lib/file-permissions.js';
 import { nodeSqliteFactory } from './node-sqlite.js';
 import type { Db, DbFactory } from './types.js';
@@ -230,7 +230,28 @@ export function initDb(
     );
   }
 
+  seedKeylessSentinels(db);
+
   return db;
+}
+
+function seedKeylessSentinels(db: Db): void {
+  const keylessPlatforms = ['kilo', 'pollinations', 'ovh'];
+  for (const platform of keylessPlatforms) {
+    const existing = db.prepare('SELECT id FROM api_keys WHERE platform = ? LIMIT 1').get(platform);
+    if (!existing) {
+      try {
+        const { encrypted, iv, authTag } = encrypt('no-key');
+        db.prepare(`
+          INSERT INTO api_keys (platform, label, encrypted_key, iv, auth_tag, status, enabled)
+          VALUES (?, ?, ?, ?, ?, 'healthy', 1)
+        `).run(platform, 'Keyless Free Provider', encrypted, iv, authTag);
+        console.log(`[db] Auto-seeded keyless sentinel for ${platform}`);
+      } catch (err) {
+        console.error(`[db] Failed to seed keyless sentinel for ${platform}:`, err);
+      }
+    }
+  }
 }
 
 let keyStoreDecryptable: boolean | null = null;

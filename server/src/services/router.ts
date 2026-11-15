@@ -1617,6 +1617,22 @@ function selectKeyForModel(entry: ChainRow, estimatedTokens: number, skipKeys?: 
     "SELECT * FROM api_keys WHERE platform = ? AND enabled = 1 AND status IN ('healthy', 'unknown')"
   ).all(entry.platform) as KeyRow[];
   if (allKeys.length === 0) {
+    if ((provider as any).keyless) {
+      const skipId = `${entry.platform}:${entry.model_id}:-1`;
+      if (skipKeys?.has(skipId)) return null;
+      if (isOnCooldown(entry.platform, entry.model_id, -1)) return null;
+      return {
+        provider,
+        modelId: entry.model_id,
+        modelDbId: entry.model_db_id,
+        apiKey: 'no-key',
+        keyId: -1,
+        platform: entry.platform,
+        displayName: entry.display_name,
+        rpdLimit: entry.rpd_limit,
+        tpdLimit: entry.tpd_limit,
+      };
+    }
     diag?.push(`${label}: no enabled+healthy key for platform`);
     return null;
   }
@@ -2447,6 +2463,38 @@ export function routeRequest(estimatedTokens = 1000, skipKeys?: Set<string>, pre
     // the sorted chain for THIS request (no explicit penalty needed).
     const route = selectKeyForModel(entry, estimatedTokens, skipKeys, diag);
     if (route) return route;
+  }
+
+  // Bulletproof fallback: if all configured models in chain are exhausted or unavailable,
+  // route to a live keyless provider (Kilo or Pollinations) so chat never breaks
+  const kiloProvider = getProvider('kilo' as any);
+  if (kiloProvider && !isOnCooldown('kilo', 'kilo-auto/free', -1)) {
+    return {
+      provider: kiloProvider,
+      modelId: 'kilo-auto/free',
+      modelDbId: 999998,
+      apiKey: 'no-key',
+      keyId: -1,
+      platform: 'kilo',
+      displayName: 'Kilo Auto Free (Reliable Keyless)',
+      rpdLimit: null,
+      tpdLimit: null,
+    };
+  }
+
+  const pollinationsProvider = getProvider('pollinations' as any);
+  if (pollinationsProvider && !isOnCooldown('pollinations', 'openai-fast', -1)) {
+    return {
+      provider: pollinationsProvider,
+      modelId: 'openai-fast',
+      modelDbId: 999999,
+      apiKey: 'no-key',
+      keyId: -1,
+      platform: 'pollinations',
+      displayName: 'GPT-OSS 20B (Pollinations Fallback)',
+      rpdLimit: null,
+      tpdLimit: null,
+    };
   }
 
   // The aggregate keyless line rides in diagnostics but NOT in the summary's

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import multer from 'multer';
 import path from 'path';
 import { getDb } from '../db/index.js';
+import { pushKeyToSupabase, deleteKeyFromSupabase } from '../services/supabase-sync.js';
 import { resolveProvider, getAllProviders } from '../providers/index.js';
 import { OpenAICompatProvider, isAnonymousCredential } from '../providers/openai-compat.js';
 import { getSyncState } from '../services/catalog-sync.js';
@@ -861,6 +862,8 @@ keysRouter.post('/', (req: Request, res: Response) => {
   // #1348: fetch the provider's models in the background when the catalog
   // carries none for it. No-op for every other platform.
   triggerBuiltinModelDiscovery(db, platform, 'key_added');
+
+  pushKeyToSupabase(platform, keyToStore, label).catch(() => {});
 
   res.status(201).json({
     id: result.lastInsertRowid,
@@ -1871,6 +1874,8 @@ keysRouter.delete('/:id', (req: Request, res: Response) => {
     db.prepare('DELETE FROM media_models WHERE key_id = ?').run(id);
   });
   remove();
+
+  deleteKeyFromSupabase(row.platform).catch(() => {});
 
   res.json({ success: true });
 });

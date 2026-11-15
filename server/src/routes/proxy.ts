@@ -54,7 +54,7 @@ const AUTO_MODEL_ID = 'auto';
 function isAutoModel(modelId: string | undefined): boolean {
   if (!modelId) return true;
   const lower = modelId.toLowerCase();
-  return lower === AUTO_MODEL_ID || lower.startsWith(`${AUTO_MODEL_ID}:`);
+  return lower === AUTO_MODEL_ID || lower.startsWith(`${AUTO_MODEL_ID}:`) || lower === 'zed' || lower === 'kortix';
 }
 
 // timingSafeStringEqual moved to lib/system-prompt.ts (resolveAuth needs it
