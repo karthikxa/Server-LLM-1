@@ -40,15 +40,16 @@ function getSupabasePool(): pg.Pool | null {
   const dbUrl = process.env.DATABASE_URL?.trim();
   if (!dbUrl) return null;
   if (!pool) {
-    pool = new Pool({
+    const newPool = new Pool({
       connectionString: dbUrl,
       ssl: { rejectUnauthorized: false },
       max: 3,
       connectionTimeoutMillis: 5000,
     });
-    pool.on('error', (err) => {
+    newPool.on('error', (err: any) => {
       console.warn('[supabase-sync] Postgres pool error:', err.message);
     });
+    pool = newPool;
   }
   return pool;
 }
