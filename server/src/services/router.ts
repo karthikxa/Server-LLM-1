@@ -1632,6 +1632,8 @@ function selectKeyForModel(entry: ChainRow, estimatedTokens: number, skipKeys?: 
         displayName: entry.display_name,
         contextWindow: entry.context_window ?? null,
         endpointScope: '',
+        rpdLimit: entry.rpd_limit ?? null,
+        tpdLimit: entry.tpd_limit ?? null,
       };
     }
     diag?.push(`${label}: no enabled+healthy key for platform`);
@@ -2481,6 +2483,8 @@ export function routeRequest(estimatedTokens = 1000, skipKeys?: Set<string>, pre
       displayName: 'Kilo Auto Free (Reliable Keyless)',
       contextWindow: 128000,
       endpointScope: '',
+      rpdLimit: null,
+      tpdLimit: null,
     };
   }
 
@@ -2497,6 +2501,8 @@ export function routeRequest(estimatedTokens = 1000, skipKeys?: Set<string>, pre
       displayName: 'GPT-OSS 20B (Pollinations Fallback)',
       contextWindow: 128000,
       endpointScope: '',
+      rpdLimit: null,
+      tpdLimit: null,
     };
   }
 
