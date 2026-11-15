@@ -1627,10 +1627,11 @@ function selectKeyForModel(entry: ChainRow, estimatedTokens: number, skipKeys?: 
         modelDbId: entry.model_db_id,
         apiKey: 'no-key',
         keyId: -1,
+        keyLabel: null,
         platform: entry.platform,
         displayName: entry.display_name,
-        rpdLimit: entry.rpd_limit,
-        tpdLimit: entry.tpd_limit,
+        contextWindow: entry.context_window ?? null,
+        endpointScope: '',
       };
     }
     diag?.push(`${label}: no enabled+healthy key for platform`);
@@ -2475,10 +2476,11 @@ export function routeRequest(estimatedTokens = 1000, skipKeys?: Set<string>, pre
       modelDbId: 999998,
       apiKey: 'no-key',
       keyId: -1,
+      keyLabel: null,
       platform: 'kilo',
       displayName: 'Kilo Auto Free (Reliable Keyless)',
-      rpdLimit: null,
-      tpdLimit: null,
+      contextWindow: 128000,
+      endpointScope: '',
     };
   }
 
@@ -2490,10 +2492,11 @@ export function routeRequest(estimatedTokens = 1000, skipKeys?: Set<string>, pre
       modelDbId: 999999,
       apiKey: 'no-key',
       keyId: -1,
+      keyLabel: null,
       platform: 'pollinations',
       displayName: 'GPT-OSS 20B (Pollinations Fallback)',
-      rpdLimit: null,
-      tpdLimit: null,
+      contextWindow: 128000,
+      endpointScope: '',
     };
   }
 

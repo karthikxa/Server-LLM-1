@@ -2,7 +2,7 @@ import pg from 'pg';
 import { getDb } from '../db/index.js';
 import { encrypt } from '../lib/crypto.js';
 
-const { Pool } = pg;
+const Pool = (pg as any).Pool || (pg as any).default?.Pool || pg;
 
 // Mapping between secret names in Supabase (kortix.project_secrets) and FreeLLMAPI platforms
 const SECRET_TO_PLATFORM: Record<string, string> = {
